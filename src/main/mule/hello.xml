@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a4232006-9b5b-421c-b824-d65a1bf5333a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="helloFlow" doc:id="f78604b7-3aa4-49ae-882d-a4ce8b8212b1" >
+		<http:listener doc:name="Listener" doc:id="8e4d00a3-7266-4623-b1dd-48e10d4919ba" config-ref="HTTP_Listener_config" path="/anypoint/{cityID}"/>
+		<ee:transform doc:name="Transform Message" doc:id="c1dcc004-7bec-47e2-83b3-6695a26c9969" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	`City Id`:attributes.uriParams.cityId,
+	`State`:attributes.queryParams.state
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[attributes.uriParams.cityID]" doc:name="City id" doc:id="0f6a8cf6-d38a-42a9-b628-ba705a0912de" variableName="cityid"/>
+		<set-variable value="#[attributes.queryParams.state]" doc:name="State" doc:id="a00b18bc-1b44-42d4-8c85-4212517fa318" variableName="state"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f744ddf4-7789-4f83-baf2-c7bdfbf66498" />
+	</flow>
+</mule>
